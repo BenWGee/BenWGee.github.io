@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Points Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background: #4a90e2;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        main {
+            margin-top: 20px;
+        }
+        #bonusPointsList {
+            display: none; /* Hide the list by default */
+        }
+        .bonus-point {
+            margin: 5px 0;
+            padding: 10px;
+            background: #e7f3fe;
+            border: 1px solid #4a90e2;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Points Tracker</h1>
+</header>
+
+<main>
+    <h2>Bonus Points</h2>
+    <button id="newBonusPointsBtn">New Bonus Points</button>
+    <div id="bonusPointsList">
+        <div class="bonus-point">Bonus Point 1</div>
+        <div class="bonus-point">Bonus Point 2</div>
+        <div class="bonus-point">Bonus Point 3</div>
+        <div class="bonus-point">Bonus Point 4</div>
+        <div class="bonus-point">Bonus Point 5</div>
+        <div class="bonus-point">Bonus Point 6</div>
+        <div class="bonus-point">Bonus Point 7</div>
+        <div class="bonus-point">Bonus Point 8</div>
+        <div class="bonus-point">Bonus Point 9</div>
+        <div class="bonus-point">Bonus Point 10</div>
+    </div>
+    <div id="displayedPoints"></div>
+</main>
+
+<script>
+    const bonusPointsList = document.getElementById('bonusPointsList');
+    const newBonusPointsBtn = document.getElementById('newBonusPointsBtn');
+    const displayedPoints = document.getElementById('displayedPoints');
+
+    // Show the bonus points list when the button is clicked
+    newBonusPointsBtn.addEventListener('click', function() {
+        // Show the hidden list if it's not already visible
+        if (bonusPointsList.style.display === 'none') {
+            bonusPointsList.style.display = 'block';
+        }
+
+        // Get all bonus points
+        const points = Array.from(bonusPointsList.children);
+        
+        // Check if there are any points left to display
+        if (points.length === 0) {
+            displayedPoints.innerHTML = '<p>No more bonus points available!</p>';
+            return;
+        }
+
+        // Pull 10 bonus points from the list
+        const pointsToDisplay = points.splice(0, Math.min(10, points.length));
+
+        // Display the points
+        pointsToDisplay.forEach(point => {
+            displayedPoints.appendChild(point.cloneNode(true)); // Clone the point to display
+        });
+
+        // Update the bonus points list
+        bonusPointsList.innerHTML = ''; // Clear the list after pulling points
+        points.forEach(point => bonusPointsList.appendChild(point)); // Re-add remaining points
+    });
+</script>
+
+</body>
+</html>
