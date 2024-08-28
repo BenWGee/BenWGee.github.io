@@ -21,12 +21,26 @@
         main {
             margin-top: 20px;
         }
+        #bonusPointsList {
+            display: none; /* Hide the list by default */
+        }
         .bonus-point {
             margin: 5px 0;
             padding: 10px;
             background: #e7f3fe;
             border: 1px solid #4a90e2;
             border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #4cae4c;
         }
     </style>
 </head>
@@ -38,16 +52,18 @@
 
 <main>
     <h2>Bonus Points</h2>
-    <button id="newBonusPointsBtn">Show Bonus Points</button>
+    <button id="newBonusPointsBtn">New Bonus Points</button>
+    <div id="bonusPointsList"></div>
     <div id="displayedPoints"></div>
 </main>
 
 <script>
+    const bonusPointsList = document.getElementById('bonusPointsList');
     const newBonusPointsBtn = document.getElementById('newBonusPointsBtn');
     const displayedPoints = document.getElementById('displayedPoints');
 
     // Fetch bonus points from the JSON file
-    fetch('bonus-points.json')
+    fetch('TNM/bonus-points.json')
         .then(response => response.json())
         .then(data => {
             // Store the bonus points in a variable
@@ -55,17 +71,28 @@
 
             // Show the bonus points list when the button is clicked
             newBonusPointsBtn.addEventListener('click', function() {
-                // Clear previously displayed points
-                displayedPoints.innerHTML = '';
+                // Show the hidden list if it's not already visible
+                if (bonusPointsList.style.display === 'none') {
+                    bonusPointsList.style.display = 'block';
+                }
 
-                // Check if there are any points to display
+                // Check if there are any points left to display
                 if (points.length === 0) {
-                    displayedPoints.innerHTML = '<p>No bonus points available!</p>';
+                    displayedPoints.innerHTML = '<p>No more bonus points available!</p>';
                     return;
                 }
 
+                // Shuffle the points array
+                const shuffledPoints = points.sort(() => 0.5 - Math.random());
+
+                // Pull 10 random bonus points from the shuffled list
+                const pointsToDisplay = shuffledPoints.slice(0, Math.min(10, shuffledPoints.length));
+
+                // Clear previously displayed points
+                displayedPoints.innerHTML = '';
+
                 // Display the points
-                points.forEach(point => {
+                pointsToDisplay.forEach(point => {
                     const pointDiv = document.createElement('div');
                     pointDiv.className = 'bonus-point';
                     pointDiv.textContent = `${point.name} - Value: ${point.value}`;
