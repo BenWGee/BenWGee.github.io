@@ -63,7 +63,7 @@
     const displayedPoints = document.getElementById('displayedPoints');
 
     // Fetch bonus points from the JSON file
-    fetch('bonus-points.json')
+    fetch('TNM/bonus-points.json')
         .then(response => response.json())
         .then(data => {
             // Store the bonus points in a variable
@@ -82,8 +82,14 @@
                     return;
                 }
 
-                // Pull 10 bonus points from the list
-                const pointsToDisplay = points.splice(0, Math.min(10, points.length));
+                // Shuffle the points array
+                const shuffledPoints = points.sort(() => 0.5 - Math.random());
+
+                // Pull 10 random bonus points from the shuffled list
+                const pointsToDisplay = shuffledPoints.slice(0, Math.min(10, shuffledPoints.length));
+
+                // Clear previously displayed points
+                displayedPoints.innerHTML = '';
 
                 // Display the points
                 pointsToDisplay.forEach(point => {
