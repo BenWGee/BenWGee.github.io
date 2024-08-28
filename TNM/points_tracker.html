@@ -21,32 +21,12 @@
         main {
             margin-top: 20px;
         }
-        #bonusPointsList {
-            display: none; /* Hide the list by default */
-        }
         .bonus-point {
             margin: 5px 0;
             padding: 10px;
             background: #e7f3fe;
             border: 1px solid #4a90e2;
             border-radius: 5px;
-            display: flex;
-            align-items: center;
-        }
-        button {
-            padding: 10px;
-            background-color: #5cb85c;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #4cae4c;
-        }
-        .total-score {
-            margin-top: 20px;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -57,31 +37,17 @@
 </header>
 
 <main>
-    <h2>Enter Your Name</h2>
-    <input type="text" id="userNameInput" placeholder="Enter your name" />
-    <button id="addUserBtn">Add User</button>
-    
     <h2>Bonus Points</h2>
-    <button id="newBonusPointsBtn">New Bonus Points</button>
-    <div id="bonusPointsList"></div>
+    <button id="newBonusPointsBtn">Show Bonus Points</button>
     <div id="displayedPoints"></div>
-    <div class="total-score" id="totalScore"></div>
 </main>
 
 <script>
-    const bonusPointsList = document.getElementById('bonusPointsList');
     const newBonusPointsBtn = document.getElementById('newBonusPointsBtn');
     const displayedPoints = document.getElementById('displayedPoints');
-    const totalScore = document.getElementById('totalScore');
-    const userNameInput = document.getElementById('userNameInput');
-    const addUserBtn = document.getElementById('addUserBtn');
-
-    // Object to store user scores
-    const userScores = {};
-    let currentUser = '';
 
     // Fetch bonus points from the JSON file
-    fetch('bonus-points.json')
+    fetch('TNM/bonus-points.json')
         .then(response => response.json())
         .then(data => {
             // Store the bonus points in a variable
@@ -89,76 +55,27 @@
 
             // Show the bonus points list when the button is clicked
             newBonusPointsBtn.addEventListener('click', function() {
-                // Show the hidden list if it's not already visible
-                if (bonusPointsList.style.display === 'none') {
-                    bonusPointsList.style.display = 'block';
-                }
-
-                // Check if there are any points left to display
-                if (points.length === 0) {
-                    displayedPoints.innerHTML = '<p>No more bonus points available!</p>';
-                    return;
-                }
-
-                // Shuffle the points array
-                const shuffledPoints = points.sort(() => 0.5 - Math.random());
-
-                // Pull 10 random bonus points from the shuffled list
-                const pointsToDisplay = shuffledPoints.slice(0, Math.min(10, shuffledPoints.length));
-
                 // Clear previously displayed points
                 displayedPoints.innerHTML = '';
 
-                // Display the points with checkboxes
-                pointsToDisplay.forEach(point => {
+                // Check if there are any points to display
+                if (points.length === 0) {
+                    displayedPoints.innerHTML = '<p>No bonus points available!</p>';
+                    return;
+                }
+
+                // Display the points
+                points.forEach(point => {
                     const pointDiv = document.createElement('div');
                     pointDiv.className = 'bonus-point';
-                    pointDiv.innerHTML = `
-                        <input type="checkbox" class="point-checkbox" data-value="${point.value}" />
-                        ${point.name} - Value: ${point.value}
-                    `;
+                    pointDiv.textContent = `${point.name} - Value: ${point.value}`;
                     displayedPoints.appendChild(pointDiv); // Append the point to displayed points
-                });
-
-                // Update total score when checkboxes are changed
-                const checkboxes = displayedPoints.querySelectorAll('.point-checkbox');
-                checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', updateTotalScore);
                 });
             });
         })
         .catch(error => {
             console.error('Error fetching bonus points:', error);
         });
-
-    // Add user and set current user
-    addUserBtn.addEventListener('click', () => {
-        const userName = userNameInput.value.trim();
-        if (userName) {
-            currentUser = userName;
-            if (!userScores[currentUser]) {
-                userScores[currentUser] = 0; // Initialize score for new user
-            }
-            userNameInput.value = ''; // Clear input
-            updateTotalScore(); // Update score display
-        }
-    });
-
-    function updateTotalScore() {
-        if (!currentUser) return; // No user selected
-
-        // Reset score for the current user
-        userScores[currentUser] = 0;
-
-        // Calculate total score based on checked checkboxes
-        const checkboxes = displayedPoints.querySelectorAll('.point-checkbox:checked');
-        checkboxes.forEach(checkbox => {
-            userScores[currentUser] += parseInt(checkbox.getAttribute('data-value'), 10);
-        });
-
-        // Display the total score
-        totalScore.innerHTML = `${currentUser}'s Total Score: ${userScores[currentUser]}`;
-    }
 </script>
 
 </body>
