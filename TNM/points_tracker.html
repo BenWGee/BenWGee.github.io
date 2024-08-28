@@ -59,14 +59,22 @@
     <button id="newBonusPointsBtn">New Bonus Points</button>
     <div id="bonusPointsList"></div>
     <div id="displayedPoints"></div>
-    <div class="total" id="totalPoints">Total Points: 0</div>
+    <div class="total" id="totalPoints">
+        <div>Player 1 Total: <span id="player1Total">0</span></div>
+        <div>Player 2 Total: <span id="player2Total">0</span></div>
+        <div>Player 3 Total: <span id="player3Total">0</span></div>
+        <div>Player 4 Total: <span id="player4Total">0</span></div>
+    </div>
 </main>
 
 <script>
     const bonusPointsList = document.getElementById('bonusPointsList');
     const newBonusPointsBtn = document.getElementById('newBonusPointsBtn');
     const displayedPoints = document.getElementById('displayedPoints');
-    const totalPoints = document.getElementById('totalPoints');
+    const player1Total = document.getElementById('player1Total');
+    const player2Total = document.getElementById('player2Total');
+    const player3Total = document.getElementById('player3Total');
+    const player4Total = document.getElementById('player4Total');
 
     // Fetch bonus points from the JSON file
     fetch('bonus-points.json')
@@ -113,12 +121,27 @@
         });
 
     function calculateTotal() {
+        // Initialize totals for each player
+        let totals = {
+            player1: 0,
+            player2: 0,
+            player3: 0,
+            player4: 0
+        };
+
+        // Get all checked checkboxes
         const checkboxes = document.querySelectorAll('.player-checkbox:checked');
-        let total = 0;
         checkboxes.forEach(checkbox => {
-            total += parseInt(checkbox.getAttribute('data-value'));
+            const player = checkbox.getAttribute('data-player');
+            const value = parseInt(checkbox.getAttribute('data-value'));
+            totals[`player${player}`] += value; // Add value to the corresponding player's total
         });
-        totalPoints.textContent = `Total Points: ${total}`;
+
+        // Update the total display for each player
+        player1Total.textContent = totals.player1;
+        player2Total.textContent = totals.player2;
+        player3Total.textContent = totals.player3;
+        player4Total.textContent = totals.player4;
     }
 </script>
 
