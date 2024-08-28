@@ -42,6 +42,10 @@
         button:hover {
             background-color: #4cae4c;
         }
+        .total {
+            margin-top: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -55,54 +59,67 @@
     <button id="newBonusPointsBtn">New Bonus Points</button>
     <div id="bonusPointsList"></div>
     <div id="displayedPoints"></div>
+    <div class="total" id="totalPoints">Total Points: 0</div>
 </main>
 
 <script>
     const bonusPointsList = document.getElementById('bonusPointsList');
     const newBonusPointsBtn = document.getElementById('newBonusPointsBtn');
     const displayedPoints = document.getElementById('displayedPoints');
+    const totalPoints = document.getElementById('totalPoints');
 
     // Fetch bonus points from the JSON file
     fetch('bonus-points.json')
         .then(response => response.json())
         .then(data => {
-            // Store the bonus points in a variable
             let points = data.bonusPoints;
 
-            // Show the bonus points list when the button is clicked
             newBonusPointsBtn.addEventListener('click', function() {
-                // Show the hidden list if it's not already visible
                 if (bonusPointsList.style.display === 'none') {
                     bonusPointsList.style.display = 'block';
                 }
 
-                // Check if there are any points left to display
                 if (points.length === 0) {
                     displayedPoints.innerHTML = '<p>No more bonus points available!</p>';
                     return;
                 }
 
-                // Shuffle the points array
                 const shuffledPoints = points.sort(() => 0.5 - Math.random());
-
-                // Pull 10 random bonus points from the shuffled list
                 const pointsToDisplay = shuffledPoints.slice(0, Math.min(10, shuffledPoints.length));
-
-                // Clear previously displayed points
                 displayedPoints.innerHTML = '';
 
-                // Display the points
                 pointsToDisplay.forEach(point => {
                     const pointDiv = document.createElement('div');
                     pointDiv.className = 'bonus-point';
-                    pointDiv.textContent = `${point.name} - Value: ${point.value}`;
-                    displayedPoints.appendChild(pointDiv); // Append the point to displayed points
+                    pointDiv.innerHTML = `
+                        ${point.name} - Value: ${point.value}
+                        <label><input type="checkbox" class="player-checkbox" data-value="${point.value}" data-player="1"> Player 1</label>
+                        <label><input type="checkbox" class="player-checkbox" data-value="${point.value}" data-player="2"> Player 2</label>
+                        <label><input type="checkbox" class="player-checkbox" data-value="${point.value}" data-player="3"> Player 3</label>
+                        <label><input type="checkbox" class="player-checkbox" data-value="${point.value}" data-player="4"> Player 4</label>
+                    `;
+                    displayedPoints.appendChild(pointDiv);
+                });
+
+                // Add event listeners to checkboxes
+                const checkboxes = document.querySelectorAll('.player-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', calculateTotal);
                 });
             });
         })
         .catch(error => {
             console.error('Error fetching bonus points:', error);
         });
+
+    function calculateTotal() {
+        const checkboxes = document.querySelectorAll('.player-checkbox:checked');
+        let total = 0;
+        checkboxes.forEach(checkbox => {
+            total += parseInt(checkbox.getAttribute('data-value'));
+        });
+        totalPoints.textContent = `Total Points: ${total}`;
+    }
 </script>
 
 </body>
