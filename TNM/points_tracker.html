@@ -30,6 +30,9 @@
             background: #e7f3fe;
             border: 1px solid #4a90e2;
             border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         button {
             padding: 10px;
@@ -41,6 +44,10 @@
         }
         button:hover {
             background-color: #4cae4c;
+        }
+        .total-score {
+            margin-top: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -55,12 +62,17 @@
     <button id="newBonusPointsBtn">New Bonus Points</button>
     <div id="bonusPointsList"></div>
     <div id="displayedPoints"></div>
+    <div class="total-score" id="totalScore"></div>
 </main>
 
 <script>
     const bonusPointsList = document.getElementById('bonusPointsList');
     const newBonusPointsBtn = document.getElementById('newBonusPointsBtn');
     const displayedPoints = document.getElementById('displayedPoints');
+    const totalScore = document.getElementById('totalScore');
+
+    // Object to store user scores
+    const userScores = {};
 
     // Fetch bonus points from the JSON file
     fetch('bonus-points.json')
@@ -95,14 +107,39 @@
                 pointsToDisplay.forEach(point => {
                     const pointDiv = document.createElement('div');
                     pointDiv.className = 'bonus-point';
-                    pointDiv.textContent = `${point.name} - Value: ${point.value}`;
+                    pointDiv.innerHTML = `
+                        ${point.name} - Value: ${point.value}
+                        <input type="text" placeholder="Enter your name" class="user-name" />
+                        <button class="submit-btn">Submit</button>
+                    `;
                     displayedPoints.appendChild(pointDiv); // Append the point to displayed points
+
+                    // Add event listener for the submit button
+                    const submitBtn = pointDiv.querySelector('.submit-btn');
+                    submitBtn.addEventListener('click', () => {
+                        const userNameInput = pointDiv.querySelector('.user-name');
+                        const userName = userNameInput.value.trim();
+                        if (userName) {
+                            // Update user score
+                            if (!userScores[userName]) {
+                                userScores[userName] = 0;
+                            }
+                            userScores[userName] += point.value;
+
+                            // Update total score display
+                            updateTotalScore();
+                        }
+                    });
                 });
             });
         })
         .catch(error => {
             console.error('Error fetching bonus points:', error);
         });
+
+    function updateTotalScore() {
+        totalScore.innerHTML = 'Total Scores: ' + JSON.stringify(userScores);
+    }
 </script>
 
 </body>
